@@ -2,346 +2,479 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pontos de Pombagiras | Força e Mistério</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Crimson+Pro:ital,wght@0,400;0,700;1,400&family=Metal+Mania&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PONTOS DE POMBAGIRA</title>
     <style>
-        :root {
-            --sangue: #660000;
-            --sangue-vivo: #af0000;
-            --ouro: #d4af37;
-            --escuridao: #050505;
-            --obsidiana: #121212;
-            --nevoa: rgba(255, 255, 255, 0.1);
-            --espiritual: #4b0082;
-        }
-
-        * {
-            margin: 0; padding: 0; box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
+        /* BASE E RESET */
+        * { box-sizing: border-box; }
         body {
-            font-family: 'Crimson Pro', serif;
-            background-color: var(--escuridao);
-            color: #e0e0e0;
+            background-color: #050505;
+            color: #d4af37;
+            font-family: 'Times New Roman', Times, serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.4;
             overflow-x: hidden;
-            height: 100vh;
-            background-image: 
-                radial-gradient(circle at 50% -20%, var(--sangue) 0%, transparent 50%),
-                url('https://www.transparenttextures.com/patterns/asfalt-dark.png');
         }
 
-        /* Animação de entrada visceral */
-        @keyframes flash {
-            0% { opacity: 0; filter: grayscale(100%); }
-            100% { opacity: 1; filter: grayscale(0%); }
-        }
-
-        .app-container {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            animation: flash 1.5s ease-out;
-        }
-
-        /* HEADER IMPACTANTE */
-        .header {
-            padding: 25px 15px;
+        /* CABEÇALHO */
+        header {
             text-align: center;
-            border-bottom: 2px solid var(--ouro);
-            background: linear-gradient(to bottom, #000, var(--obsidiana));
-            box-shadow: 0 5px 20px rgba(0,0,0,0.8);
-            z-index: 10;
+            padding: 40px 15px;
+            background: linear-gradient(to bottom, #1a0000, #050505);
         }
-
-        .header h1 {
-            font-family: 'Metal Mania', cursive;
-            font-size: 2.2rem;
-            color: var(--ouro);
+        h1 {
+            color: #b30000;
+            font-size: clamp(2rem, 10vw, 3.5rem);
             text-transform: uppercase;
             letter-spacing: 4px;
-            text-shadow: 0 0 15px var(--sangue-vivo);
+            margin: 0;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.9);
+        }
+        .frase-topo {
+            color: #888;
+            font-style: italic;
+            font-size: clamp(1rem, 4vw, 1.25rem);
+            display: block;
+            margin-top: 15px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 0 10px;
         }
 
-        .header-subtitle {
-            font-family: 'Cinzel', serif;
-            font-size: 0.8rem;
-            letter-spacing: 3px;
-            color: var(--sangue-vivo);
-            font-weight: bold;
-        }
-
-        /* FILTROS ESTILIZADOS */
-        .filters-container {
-            background: var(--obsidiana);
-            padding: 15px 10px;
-            overflow-x: auto;
-            white-space: nowrap;
-            border-bottom: 1px solid #222;
-        }
-
-        .filter-tag {
-            display: inline-block;
-            padding: 8px 18px;
-            margin: 0 5px;
-            border: 1px solid var(--sangue);
-            border-radius: 0px; /* Quadrado traz força */
-            font-family: 'Cinzel', serif;
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: 0.4s;
-        }
-
-        .filter-tag.active {
-            background: var(--sangue);
-            color: white;
-            box-shadow: 0 0 15px var(--sangue-vivo);
-            border-color: var(--ouro);
-        }
-
-        /* LISTA VICERAL */
-        .music-list-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-            background: linear-gradient(to bottom, var(--escuridao), #0a0a0a);
-        }
-
-        .music-list {
+        /* GRID RESPONSIVA */
+        .grid-pontos {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            max-width: 1400px;
+            margin: 40px auto;
+            padding: 0 20px;
         }
 
-        .music-item {
-            background: #111;
-            border-left: 4px solid var(--sangue);
-            padding: 15px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            cursor: pointer;
-            overflow: hidden;
-        }
-
-        .music-item::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(45deg, transparent, rgba(139, 0, 0, 0.1));
-            pointer-events: none;
-        }
-
-        .music-item:active {
-            transform: scale(0.95);
-            background: #1a0000;
-        }
-
-        .music-item.glow-effect {
-            border-left-color: var(--ouro);
-            background: #1a1a1a;
-            box-shadow: inset 0 0 15px rgba(212, 175, 55, 0.2);
-        }
-
-        .music-title {
-            font-family: 'Cinzel', serif;
-            font-size: 0.95rem;
-            color: #fff;
-            margin-bottom: 10px;
-            line-height: 1.2;
-        }
-
-        .attribute-tag {
-            font-size: 0.65rem;
-            color: var(--ouro);
-            text-transform: uppercase;
-            opacity: 0.8;
-        }
-
-        /* PLAYER MODAL (IMERSÃO TOTAL) */
-        .video-container {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95);
-            display: none;
+        /* CARD DA POMBAGIRA */
+        .card-pombagira {
+            background: #0f0f0f;
+            border: 1px solid #222;
+            border-top: 3px solid #b30000;
+            padding: 20px;
+            border-radius: 4px;
+            display: flex;
             flex-direction: column;
-            z-index: 1000;
-            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        .card-pombagira:hover {
+            border-color: #ff0000;
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px rgba(179, 0, 0, 0.3);
         }
 
-        .video-container.active { display: flex; }
-
-        .video-header {
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .video-player-container {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 10px;
-        }
-
-        iframe {
-            width: 100%;
-            max-width: 700px;
-            aspect-ratio: 16/9;
-            border: 2px solid var(--sangue);
-            box-shadow: 0 0 50px var(--sangue);
-        }
-
-        .close-video {
-            background: var(--sangue);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            font-family: 'Cinzel', serif;
-            font-weight: bold;
-            cursor: pointer;
-            letter-spacing: 2px;
-        }
-
-        /* FOOTER */
-        .footer {
-            padding: 20px;
-            background: #000;
-            border-top: 1px solid var(--sangue);
+        .info-header {
             text-align: center;
+            margin-bottom: 15px;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
-        .energy-text {
-            font-family: 'Metal Mania', cursive;
-            color: var(--sangue-vivo);
+        .nome-pombagira {
+            color: #e60000;
             font-size: 1.4rem;
-            letter-spacing: 2px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-transform: uppercase;
         }
 
-        .playing-indicator {
+        .atributo {
+            color: #d4af37;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: bold;
+        }
+
+        .cemiterio {
+            color: #555;
+            font-size: 0.8rem;
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        /* PLAYER DE VÍDEO (MOBILE FRIENDLY) */
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* Mantém 16:9 */
+            height: 0;
+            overflow: hidden;
+            border-radius: 2px;
+            background: #000;
+            margin: 15px 0;
+            border: 1px solid #1a1a1a;
+        }
+        .video-container iframe {
             position: absolute;
-            top: 5px; right: 5px;
-            color: var(--ouro);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        /* BOTÃO */
+        .btn-link {
+            text-align: center;
+            text-decoration: none;
+            color: #b30000;
+            font-size: 0.9rem;
+            font-weight: bold;
+            padding: 10px;
+            border: 1px solid #b30000;
+            border-radius: 2px;
+            transition: 0.3s;
+            text-transform: uppercase;
+        }
+        .btn-link:hover {
+            background: #b30000;
+            color: #fff;
+        }
+
+        /* RODAPÉ VISCERAL */
+        footer {
+            margin-top: 80px;
+            padding: 60px 20px;
+            border-top: 1px solid #331111;
+            text-align: center;
+            background: linear-gradient(to bottom, #050505, #1a0000);
+        }
+        .footer-titulo {
+            color: #b30000;
+            font-size: 1.8rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px rgba(179,0,0,0.5);
+        }
+        .footer-frase {
+            color: #777;
+            font-style: italic;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+        .footer-selo {
+            margin-top: 40px;
+            color: #333;
             font-size: 0.7rem;
-            animation: pulse 1s infinite;
+            text-transform: uppercase;
+            letter-spacing: 5px;
         }
 
-        @keyframes pulse {
-            0% { opacity: 0.5; }
-            50% { opacity: 1; }
-            100% { opacity: 0.5; }
+        /* AJUSTE PARA CELULARES PEQUENOS */
+        @media (max-width: 480px) {
+            .grid-pontos { padding: 0 10px; }
+            .card-pombagira { padding: 15px; }
         }
-
-        /* Scrollbar macabra */
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: #000; }
-        ::-webkit-scrollbar-thumb { background: var(--sangue); }
     </style>
 </head>
 <body>
 
-<div class="app-container">
-    <header class="header">
-        <h1>Pombagiras</h1>
-        <div class="header-subtitle">Laroyê • Força • Ancestralidade</div>
+    <header>
+        <h1>PONTOS DE POMBAGIRA</h1>
+        <span class="frase-topo">"Onde o pé dela pisa, o inferno se ajoelha e o destino se curva ao som do seu gargalhar."</span>
     </header>
 
-    <div class="filters-container" id="filterTags">
-        <div class="filter-tag active" data-filter="all">Todas</div>
-        <div class="filter-tag" data-filter="misterio">Mistério</div>
-        <div class="filter-tag" data-filter="guerra">Guerra</div>
-        <div class="filter-tag" data-filter="alegria">Alegria</div>
-        <div class="filter-tag" data-filter="liberdade">Liberdade</div>
-        <div class="filter-tag" data-filter="cura">Cura</div>
-    </div>
-
-    <main class="music-list-container">
-        <div class="music-list" id="musicList">
-            </div>
-    </main>
-
-    <footer class="footer">
-        <div id="currentPlaying" style="font-size: 0.7rem; color: var(--ouro); margin-bottom: 5px; height: 15px;"></div>
-        <div class="energy-text">SARAVÁ POMBAGIRA!</div>
-    </footer>
-</div>
-
-<div class="video-container" id="videoContainer">
-    <div class="video-header">
-        <div id="videoTitle" style="font-family: 'Cinzel'; color: var(--ouro)"></div>
-        <button class="close-video" onclick="closePlayer()">FECHAR</button>
-    </div>
-    <div class="video-player-container">
-        <iframe id="videoPlayer" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-    </div>
-</div>
-
-<script>
-    const pombagiras = [
-        { id: 1, titulo: "Sete Saias", url: "https://www.youtube.com/embed/coi-tvUWwmc", atributos: "Alegria e Intensidade", filtro: "alegria" },
-        { id: 2, titulo: "Maria Navalha", url: "https://www.youtube.com/embed/hH1pNWlM2zE", atributos: "Malandragem e Rua", filtro: "guerra" },
-        { id: 3, titulo: "Cigana", url: "https://www.youtube.com/embed/CoVIhTrUe3w", atributos: "Liberdade e Destino", filtro: "liberdade" },
-        { id: 4, titulo: "Maria Padilha", url: "https://www.youtube.com/embed/XmGvS-k_I6s", atributos: "Reinado e Poder", filtro: "misterio" },
-        { id: 5, titulo: "Pombagira da Praia", url: "https://www.youtube.com/embed/Q182YSAcgNk", atributos: "Emoção e Limpeza", filtro: "cura" },
-        { id: 6, titulo: "Das Almas", url: "https://www.youtube.com/embed/dCNo7XIyMQ0", atributos: "Passagem e Luz", filtro: "misterio" },
-        { id: 7, titulo: "Sete Encruzilhadas", url: "https://www.youtube.com/embed/JYCfOQtEz50", atributos: "Caminhos", filtro: "misterio" },
-        { id: 8, titulo: "Menina", url: "https://www.youtube.com/embed/qN935nP6tEw", atributos: "Renovação", filtro: "cura" }
-    ];
-
-    const musicList = document.getElementById('musicList');
-    const videoContainer = document.getElementById('videoContainer');
-    const videoPlayer = document.getElementById('videoPlayer');
-    const videoTitle = document.getElementById('videoTitle');
-    const currentText = document.getElementById('currentPlaying');
-
-    function renderList(filter = 'all') {
-        musicList.innerHTML = '';
-        pombagiras.forEach(p => {
-            if (filter !== 'all' && p.filtro !== filter) return;
-
-            const card = document.createElement('div');
-            card.className = 'music-item';
-            card.innerHTML = `
-                <div class="playing-indicator" style="display:none"><i class="fas fa-fire"></i></div>
-                <div class="music-title">${p.titulo}</div>
-                <div class="attribute-tag">${p.atributos}</div>
-            `;
-            card.onclick = () => play(p);
-            musicList.appendChild(card);
-        });
-    }
-
-    function play(p) {
-        videoTitle.innerText = p.titulo.toUpperCase();
-        videoPlayer.src = p.url + "?autoplay=1";
-        videoContainer.classList.add('active');
-        currentText.innerText = "EM CONEXÃO COM: " + p.titulo;
+    <div class="grid-pontos">
         
-        // Vibração visual na lista
-        document.querySelectorAll('.music-item').forEach(i => i.classList.remove('glow-effect'));
-        event.currentTarget.classList.add('glow-effect');
-    }
+        <div class="card-pombagira">
+            <div class="info-header">
+                <span class="nome-pombagira">Maria Padilha</span>
+                <span class="atributo">Comando / Realeza</span>
+                <span class="cemiterio">Cemitério da Consolação - São Paulo</span>
+            </div>
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/tC_RDfGe1MU" allowfullscreen></iframe>
+            </div>
+            <a href="https://youtu.be/tC_RDfGe1MU" class="btn-link" target="_blank">Ouvir Chamado</a>
+        </div>
 
-    function closePlayer() {
-        videoContainer.classList.remove('active');
-        videoPlayer.src = "";
-    }
+        <div class="card-pombagira">
+            <div class="info-header">
+                <span class="nome-pombagira">Maria Mulambo</span>
+                <span class="atributo">Cura / Humildade</span>
+                <span class="cemiterio">Cemitério São João Batista - Rio de Janeiro</span>
+            </div>
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/yuoHwAb-DKU" allowfullscreen></iframe>
+            </div>
+            <a href="https://youtu.be/yuoHwAb-DKU" class="btn-link" target="_blank">Ouvir Chamado</a>
+        </div>
 
-    // Filtros
-    document.querySelectorAll('.filter-tag').forEach(tag => {
-        tag.onclick = function() {
-            document.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
-            this.classList.add('active');
-            renderList(this.dataset.filter);
-        };
-    });
+        <div class="card-pombagira">
+            <div class="info-header">
+                <span class="nome-pombagira">Maria Quitéria</span>
+                <span class="atributo">Guerra / Proteção</span>
+                <span class="cemiterio">Cemitério do Père-Lachaise - Paris</span>
+            </div>
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/jLr4AtWX3zU" allowfullscreen></iframe>
+            </div>
+            <a href="https://youtu.be/jLr4AtWX3zU" class="btn-link" target="_blank">Ouvir Chamado</a>
+        </div>
 
-    renderList();
-</script>
+        <div class="card-pombagira">
+            <div class="info-header">
+                <span class="nome-pombagira">Rosa Caveira</span>
+                <span class="atributo">Justiça / Morte</span>
+                <span class="cemiterio">Cemitério de Highgate - Londres</span>
+            </div>
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/K_B1LJ77Z2o" allowfullscreen></iframe>
+            </div>
+            <a href="https://youtu.be/K_B1LJ77Z2o" class="btn-link" target="_blank">Ouvir Chamado</a>
+        </div>
+
+        <div class="card-pombagira">
+            <div class="info-header">
+                <span class="nome-pombagira">Dama da Noite</span>
+                <span class="atributo">Mistério / Oculto</span>
+                <span class="cemiterio">Cemitério da Recoleta - Buenos Aires</span>
+            </div>
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/-2NuXJzZC0c" allowfullscreen></iframe>
+            </div>
+            <a href="https://youtu.be/-2NuXJzZC0c" class="btn-link" target="_blank">Ouvir Chamado</a>
+        </div>
+
+        <div class="card-pombagira">
+            <div class="info-header">
+                <span class="nome-pombagira">Sete Saias</span>
+                <span class="atributo">Alegria / Intensidade</span>
+                <span class="cemiterio">Cemitério Municipal - Curitiba</span>
+            </div>
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/t3YhMcwURzY" allowfullscreen></iframe>
+            </div>
+            <a href="https://youtu.be/t3YhMcwURzY" class="btn-link" target="_blank">Ouvir Chamado</a>
+        </div>
+
+        <div class="card-pombagira">
+            <div class="info-header">
+                <span class="nome-pombagira">Pombagira Cigana</span>
+                <span class="atributo">Liberdade / Prosperidade</span>
+                <span class="cemiterio">Cemitério do Caju - Rio de Janeiro</span>
+            </div>
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/qN935nP6tEw" allowfullscreen></iframe>
+            </div>
+            <a href="https://youtu.be/qN935nP6tEw" class="btn-link" target="_blank">Ouvir Chamado</a>
+        </div>
+
+        <div class="card-pombagira">
+            <div class="info-header">
+                <span class="nome-pombagira">Maria Navalha</span>
+                <span class="atributo">Malandragem / Rua</span>
+                <span class="cemiterio">St. Louis No. 1 - New Orleans</span>
+            </div>
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/CoVIhTrUe3w" allowfullscreen></iframe>
+            </div>
+            <a href="https://youtu.be/CoVIhTrUe3w" class="btn-link" target="_blank">Ouvir Chamado</a>
+        </div>
+
+        <div class="card-pombagira">
+            <div class="info-header">
+                <span class="nome-pombagira">Pombagira da Praia</span>
+                <span class="atributo">Emoção / Limpeza</span>
+                <span class="cemiterio">Cemitério de San Isidro - Madrid</span>
+            </div>
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/Ti_-EusVSj8" allowfullscreen></iframe>
+            </div>
+            <a href="https://youtu.be/Ti_-EusVSj8" class="btn-link" target="_blank">Ouvir Chamado</a>
+        </div>
+
+        <div class="card-pombagira">
+            <div class="info-header">
+                <span class="nome-pombagira">Maria Farrapo</span>
+                <span class="atributo">Sanidade / Caos</span>
+                <span class="cemiterio">Cemitério Monumental - Milão</span>
+            </div>
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/JYCfOQtEz50" allowfullscreen></iframe>
+            </div>
+            <a href="https://youtu.be/JYCfOQtEz50" class="btn-link" target="_blank">Ouvir Chamado</a>
+        </div>
+
+        <div class="card-pombagira">
+            <div class="info-header">
+                <span class="nome-pombagira">Pombagira Menina</span>
+                <span class="atributo">Renovação / Inocência</span>
+                <span class="cemiterio">Hollywood Forever - Califórnia</span>
+            </div>
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/3krnGT0s0bQ" allowfullscreen></iframe>
+            </div>
+            <a href="https://youtu.be/3krnGT0s0bQ" class="btn-link" target="_blank">Ouvir Chamado</a>
+        </div>
+
+        <div class="card-pombagira">
+            <div class="info-header">
+                <span class="nome-pombagira">Pombagira da Figueira</span>
+                <span class="atributo">Raiz / Ancestralidade</span>
+                <span class="cemiterio">Cemitério Protestante - Roma</span>
+            </div>
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/2-NjMF-6GzI" allowfullscreen></iframe>
+            </div>
+            <a href="https://youtu.be/2-NjMF-6GzI" class="btn-link" target="_blank">Ouvir Chamado</a>
+        </div>
+
+        <div class="card-pombagira">
+            <div class="info-header">
+                <span class="nome-pombagira">Pombagira das Almas</span>
+                <span class="atributo">Transmutação / Passagem</span>
+                <span class="cemiterio">Cemitério do Bonfim - Belo Horizonte</span>
+            </div>
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/wo_D21rsYAE" allowfullscreen></iframe>
+            </div>
+            <a href="https://youtu.be/wo_D21rsYAE" class="btn-link" target="_blank">Ouvir Chamado</a>
+        </div>
+
+        <div class="card-pombagira">
+            <div class="info-header">
+                <span class="nome-pombagira">Sete Encruzilhadas</span>
+                <span class="atributo">Caminhos / Escolhas</span>
+                <span class="cemiterio">Cemitério de Maruí - Niterói</span>
+            </div>
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/doPc-mLAH1g" allowfullscreen></iframe>
+            </div>
+            <a href="https://youtu.be/doPc-mLAH1g" class="btn-link" target="_blank">Ouvir Chamado</a>
+        </div>
+
+        <div class="card-pombagira">
+            <div class="info-header">
+                <span class="nome-pombagira">Pombagira da Lua</span>
+                <span class="atributo">Intuição / Ciclos</span>
+                <span class="cemiterio">Skogskyrkogården - Estocolmo</span>
+            </div>
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/hH1pNWlM2zE" allowfullscreen></iframe>
+            </div>
+            <a href="https://youtu.be/hH1pNWlM2zE" class="btn-link" target="_blank">Ouvir Chamado</a>
+        </div>
+
+        <div class="card-pombagira">
+            <div class="info-header">
+                <span class="nome-pombagira">Pombagira das Trevas</span>
+                <span class="atributo">Domínio / Sombras</span>
+                <span class="cemiterio">Zentralfriedhof - Viena</span>
+            </div>
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/coi-tvUWwmc" allowfullscreen></iframe>
+            </div>
+            <a href="https://youtu.be/coi-tvUWwmc" class="btn-link" target="_blank">Ouvir Chamado</a>
+        </div>
+
+        <div class="card-pombagira">
+            <div class="info-header">
+                <span class="nome-pombagira">Pombagira da Serra</span>
+                <span class="atributo">Força / Elevação</span>
+                <span class="cemiterio">Okunoin - Monte Koya, Japão</span>
+            </div>
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/dCNo7XIyMQ0" allowfullscreen></iframe>
+            </div>
+            <a href="https://youtu.be/dCNo7XIyMQ0" class="btn-link" target="_blank">Ouvir Chamado</a>
+        </div>
+
+        <div class="card-pombagira">
+            <div class="info-header">
+                <span class="nome-pombagira">Pombagira do Fogo</span>
+                <span class="atributo">Paixão / Destruição</span>
+                <span class="cemiterio">Cemitério de Tulcán - Equador</span>
+            </div>
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/Tp1MB84YL2s" allowfullscreen></iframe>
+            </div>
+            <a href="https://youtu.be/Tp1MB84YL2s" class="btn-link" target="_blank">Ouvir Chamado</a>
+        </div>
+
+        <div class="card-pombagira">
+            <div class="info-header">
+                <span class="nome-pombagira">Águas Profundas</span>
+                <span class="atributo">Abismo / Inconsciente</span>
+                <span class="cemiterio">Neptune Memorial Reef - Flórida</span>
+            </div>
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/Q182YSAcgNk" allowfullscreen></iframe>
+            </div>
+            <a href="https://youtu.be/Q182YSAcgNk" class="btn-link" target="_blank">Ouvir Chamado</a>
+        </div>
+
+        <div class="card-pombagira">
+            <div class="info-header">
+                <span class="nome-pombagira">Pombagira da Sombra</span>
+                <span class="atributo">Revelação / Verdade</span>
+                <span class="cemiterio">Cemitério de Greyfriars - Escócia</span>
+            </div>
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/KAwFZvDHOk4" allowfullscreen></iframe>
+            </div>
+            <a href="https://youtu.be/KAwFZvDHOk4" class="btn-link" target="_blank">Ouvir Chamado</a>
+        </div>
+
+        <div class="card-pombagira">
+            <div class="info-header">
+                <span class="nome-pombagira">Pombagira da Fenda</span>
+                <span class="atributo">Limiar / Portais</span>
+                <span class="cemiterio">Cemitério Judaico de Praga - Tcheca</span>
+            </div>
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/P4mC3avgs3Y" allowfullscreen></iframe>
+            </div>
+            <a href="https://youtu.be/P4mC3avgs3Y" class="btn-link" target="_blank">Ouvir Chamado</a>
+        </div>
+
+        <div class="card-pombagira">
+            <div class="info-header">
+                <span class="nome-pombagira">Calunga Profunda</span>
+                <span class="atributo">Eternidade / Fim</span>
+                <span class="cemiterio">Vale dos Reis - Luxor, Egito</span>
+            </div>
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/GcRdBJzBMa8" allowfullscreen></iframe>
+            </div>
+            <a href="https://youtu.be/GcRdBJzBMa8" class="btn-link" target="_blank">Ouvir Chamado</a>
+        </div>
+
+        <div class="card-pombagira">
+            <div class="info-header">
+                <span class="nome-pombagira">Das Correntes</span>
+                <span class="atributo">Quebra / Libertação</span>
+                <span class="cemiterio">Cemitério Santa Isabel - Belém</span>
+            </div>
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/1rrmBzp9Cfo" allowfullscreen></iframe>
+            </div>
+            <a href="https://youtu.be/1rrmBzp9Cfo" class="btn-link" target="_blank">Ouvir Chamado</a>
+        </div>
+
+    </div>
+
+    <footer>
+        <div class="footer-titulo">Laroyê, Senhora do Destino</div>
+        <p class="footer-frase">
+            "Não pise no rastro dela, pois o chão que ela toca incendeia o que é falso. Entre o cemitério e a encruzilhada, sua risada é a lei que corta a escuridão e abre os caminhos de quem tem coragem de olhar nos seus olhos."
+        </p>
+        <div class="footer-selo">Sob o Domínio da Calunga • 2026</div>
+    </footer>
 
 </body>
 </html>
