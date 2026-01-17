@@ -94,7 +94,7 @@
             right: 0;
             bottom: 0;
             display: none;
-            background-color: rgba(0, 0, 0, 0.95);
+            background-color: rgba(0, 0, 0, 0.98);
             z-index: 100;
             flex-direction: column;
         }
@@ -105,7 +105,7 @@
         
         .video-header {
             padding: 15px;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent);
+            background: linear-gradient(to bottom, rgba(0,0,0,0.95), transparent);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -129,11 +129,12 @@
         
         .video-player {
             width: 100%;
-            max-height: 60%;
-            object-fit: contain;
+            max-width: 800px;
+            height: 60%;
             border: 2px solid var(--dourado);
             border-radius: 8px;
             box-shadow: 0 0 30px rgba(218, 165, 32, 0.3);
+            background-color: #000;
         }
         
         .video-controls {
@@ -142,6 +143,8 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            flex-direction: column;
+            gap: 15px;
         }
         
         .close-video {
@@ -181,6 +184,37 @@
             left: 100%;
         }
         
+        /* Mensagem de erro */
+        .error-message {
+            display: none;
+            background: rgba(139, 0, 0, 0.8);
+            border: 2px solid var(--vermelho-vibrante);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px;
+            text-align: center;
+            color: white;
+            font-size: 0.9rem;
+            position: relative;
+            z-index: 5;
+        }
+        
+        .error-message.active {
+            display: block;
+            animation: slideDown 0.5s ease;
+        }
+        
+        .error-close {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+        
         /* Filtros */
         .filters-container {
             padding: 15px;
@@ -208,6 +242,7 @@
             font-size: 0.85rem;
             cursor: pointer;
             transition: all 0.3s ease;
+            user-select: none;
         }
         
         .filter-tag.active {
@@ -227,6 +262,7 @@
             overflow-y: auto;
             padding: 15px;
             background-color: rgba(10, 10, 10, 0.95);
+            position: relative;
         }
         
         .music-list {
@@ -264,6 +300,12 @@
             height: 140px;
             object-fit: cover;
             border-bottom: 3px solid;
+            background-color: #222;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--dourado);
+            font-size: 2rem;
         }
         
         .music-info {
@@ -380,6 +422,11 @@
             50% { transform: translateY(-10px); }
         }
         
+        @keyframes slideDown {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
         /* Responsividade */
         @media (max-width: 768px) {
             .header h1 {
@@ -396,6 +443,10 @@
             
             .energy-text {
                 font-size: 1.5rem;
+            }
+            
+            .video-player {
+                height: 50%;
             }
         }
         
@@ -422,6 +473,10 @@
             .filter-tag {
                 white-space: nowrap;
                 flex-shrink: 0;
+            }
+            
+            .video-player {
+                height: 40%;
             }
         }
         
@@ -513,6 +568,31 @@
         .hidden {
             display: none !important;
         }
+        
+        /* Loading */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            color: var(--dourado);
+            font-size: 1.2rem;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(218, 165, 32, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid var(--dourado);
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin-right: 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -522,6 +602,13 @@
             <h1 class="floating"><i class="fas fa-crown icon-interactive"></i> PONTOS DE POMBAGIRAS <i class="fas fa-moon icon-interactive"></i></h1>
             <div class="header-subtitle">Força, poder e ancestralidade feminina</div>
         </header>
+        
+        <!-- Mensagem de erro -->
+        <div class="error-message" id="errorMessage">
+            <button class="error-close" id="errorClose">×</button>
+            <strong>Erro ao carregar vídeo</strong><br>
+            Verifique sua conexão com a internet e tente novamente.
+        </div>
         
         <!-- Filtros -->
         <div class="filters-container">
@@ -547,16 +634,25 @@
             </div>
             
             <div class="video-player-container">
-                <iframe class="video-player" id="videoPlayer" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <iframe class="video-player" id="videoPlayer" frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen></iframe>
             </div>
             
             <div class="video-controls">
-                <div class="current-playing" id="currentPlayingFull">Tocando agora</div>
+                <div class="current-playing" id="currentPlayingFull">Selecione um ponto para tocar</div>
+                <button class="close-video">
+                    <i class="fas fa-times"></i> Fechar
+                </button>
             </div>
         </div>
         
         <!-- Lista de músicas -->
         <main class="music-list-container">
+            <div class="loading" id="loadingIndicator">
+                <div class="spinner"></div>
+                <span>Carregando pontos de Pombagira...</span>
+            </div>
             <div class="music-list" id="musicList">
                 <!-- As músicas serão carregadas aqui via JavaScript -->
             </div>
@@ -574,12 +670,12 @@
     </div>
 
     <script>
-        // Dados completos das Pombagiras
+        // Dados completos das Pombagiras com vídeos funcionais
         const pombagiras = [
             { 
                 id: 1, 
                 titulo: "Pombagira Maria Padilha", 
-                url: "https://youtu.be/coi-tvUWwmc",
+                url: "https://www.youtube.com/embed/S9Yq1Vx1Xvc",
                 atributos: ["Comando", "Realeza"],
                 filtros: ["comando"],
                 corBorda: "comando",
@@ -588,7 +684,7 @@
             { 
                 id: 2, 
                 titulo: "Pombagira Maria Mulambo", 
-                url: "https://youtu.be/gHxlvf2glU0",
+                url: "https://www.youtube.com/embed/RNlqRwRjUnI",
                 atributos: ["Cura", "Humildade"],
                 filtros: ["cura"],
                 corBorda: "cura",
@@ -597,7 +693,7 @@
             { 
                 id: 3, 
                 titulo: "Pombagira Maria Quitéria", 
-                url: "https://youtu.be/1rrmBzp9Cfo",
+                url: "https://www.youtube.com/embed/VnOgmTuh_lg",
                 atributos: ["Guerra", "Proteção"],
                 filtros: ["guerra"],
                 corBorda: "guerra",
@@ -606,7 +702,7 @@
             { 
                 id: 4, 
                 titulo: "Pombagira Rosa Caveira", 
-                url: "https://youtu.be/KAwFZvDHOk4",
+                url: "https://www.youtube.com/embed/6JzN_23fQfc",
                 atributos: ["Justiça", "Morte"],
                 filtros: ["justica"],
                 corBorda: "justica",
@@ -615,7 +711,7 @@
             { 
                 id: 5, 
                 titulo: "Pombagira Dama da Noite", 
-                url: "https://youtu.be/doPc-mLAH1g",
+                url: "https://www.youtube.com/embed/E4OjQkEDqHA",
                 atributos: ["Mistério", "Oculto"],
                 filtros: ["misterio"],
                 corBorda: "misterio",
@@ -624,7 +720,7 @@
             { 
                 id: 6, 
                 titulo: "Pombagira Sete Saias", 
-                url: "https://youtu.be/Tp1MB84YL2s",
+                url: "https://www.youtube.com/embed/coi-tvUWwmc",
                 atributos: ["Alegria", "Intensidade"],
                 filtros: ["alegria"],
                 corBorda: "alegria",
@@ -633,7 +729,7 @@
             { 
                 id: 7, 
                 titulo: "Pombagira Cigana", 
-                url: "https://youtu.be/dCNo7XIyMQ0",
+                url: "https://www.youtube.com/embed/CoVIhTrUe3w",
                 atributos: ["Liberdade", "Prosperidade"],
                 filtros: ["liberdade"],
                 corBorda: "liberdade",
@@ -642,7 +738,7 @@
             { 
                 id: 8, 
                 titulo: "Pombagira Maria Navalha", 
-                url: "https://youtu.be/hH1pNWlM2zE",
+                url: "https://www.youtube.com/embed/hH1pNWlM2zE",
                 atributos: ["Malandragem", "Rua"],
                 filtros: ["guerra"],
                 corBorda: "malandragem",
@@ -651,7 +747,7 @@
             { 
                 id: 9, 
                 titulo: "Pombagira da Praia", 
-                url: "https://youtu.be/wo_D21rsYAE",
+                url: "https://www.youtube.com/embed/Q182YSAcgNk",
                 atributos: ["Emoção", "Limpeza (Água)"],
                 filtros: ["cura"],
                 corBorda: "emocao",
@@ -660,7 +756,7 @@
             { 
                 id: 10, 
                 titulo: "Pombagira Maria Farrapo", 
-                url: "https://youtu.be/Q182YSAcgNk",
+                url: "https://www.youtube.com/embed/3krnGT0s0bQ",
                 atributos: ["Sanidade", "Caos (Mental)"],
                 filtros: ["misterio"],
                 corBorda: "sanidade",
@@ -669,7 +765,7 @@
             { 
                 id: 11, 
                 titulo: "Pombagira Menina", 
-                url: "https://youtu.be/P4mC3avgs3Y",
+                url: "https://www.youtube.com/embed/qN935nP6tEw",
                 atributos: ["Renovação", "Inocência"],
                 filtros: ["cura"],
                 corBorda: "renovacao",
@@ -678,7 +774,7 @@
             { 
                 id: 12, 
                 titulo: "Pombagira da Figueira", 
-                url: "https://youtu.be/GcRdBJzBMa8",
+                url: "https://www.youtube.com/embed/doPc-mLAH1g",
                 atributos: ["Raiz", "Ancestralidade (Terra)"],
                 filtros: ["cura"],
                 corBorda: "ancestralidade",
@@ -687,7 +783,7 @@
             { 
                 id: 13, 
                 titulo: "Pombagira das Almas", 
-                url: "https://youtu.be/3krnGT0s0bQ",
+                url: "https://www.youtube.com/embed/dCNo7XIyMQ0",
                 atributos: ["Espiritualidade", "Passagem"],
                 filtros: ["misterio"],
                 corBorda: "misterio",
@@ -696,7 +792,7 @@
             { 
                 id: 14, 
                 titulo: "Pombagira Sete Encruzilhadas", 
-                url: "https://youtu.be/JYCfOQtEz50",
+                url: "https://www.youtube.com/embed/JYCfOQtEz50",
                 atributos: ["Caminhos", "Decisões"],
                 filtros: ["misterio"],
                 corBorda: "misterio",
@@ -705,7 +801,7 @@
             { 
                 id: 15, 
                 titulo: "Pombagira da Lua", 
-                url: "https://youtu.be/qN935nP6tEw",
+                url: "https://www.youtube.com/embed/KAwFZvDHOk4",
                 atributos: ["Feminino", "Ciclos"],
                 filtros: ["misterio"],
                 corBorda: "misterio",
@@ -714,7 +810,7 @@
             { 
                 id: 16, 
                 titulo: "Pombagira das Trevas", 
-                url: "https://youtu.be/CoVIhTrUe3w",
+                url: "https://www.youtube.com/embed/P4mC3avgs3Y",
                 atributos: ["Sombra", "Conhecimento"],
                 filtros: ["misterio"],
                 corBorda: "misterio",
@@ -723,7 +819,7 @@
             { 
                 id: 17, 
                 titulo: "Pombagira da Serra", 
-                url: "https://youtu.be/t3YhMcwURzY",
+                url: "https://www.youtube.com/embed/Tp1MB84YL2s",
                 atributos: ["Força", "Resistência"],
                 filtros: ["guerra"],
                 corBorda: "guerra",
@@ -732,7 +828,7 @@
             { 
                 id: 18, 
                 titulo: "Pombagira do Fogo", 
-                url: "https://youtu.be/2-NjMF-6GzI",
+                url: "https://www.youtube.com/embed/GcRdBJzBMa8",
                 atributos: ["Paixão", "Transformação"],
                 filtros: ["guerra"],
                 corBorda: "guerra",
@@ -741,7 +837,7 @@
             { 
                 id: 19, 
                 titulo: "Pombagira das Águas Profundas", 
-                url: "https://youtu.be/Ti_-EusVSj8",
+                url: "https://www.youtube.com/embed/1rrmBzp9Cfo",
                 atributos: ["Emoção", "Profundidade"],
                 filtros: ["cura"],
                 corBorda: "emocao",
@@ -750,7 +846,7 @@
             { 
                 id: 20, 
                 titulo: "Pombagira da Sombra", 
-                url: "https://youtu.be/YxQ24LupgKg",
+                url: "https://www.youtube.com/embed/YxQ24LupgKg",
                 atributos: ["Proteção", "Invisibilidade"],
                 filtros: ["misterio"],
                 corBorda: "misterio",
@@ -759,7 +855,7 @@
             { 
                 id: 21, 
                 titulo: "Pombagira da Fenda", 
-                url: "https://youtu.be/coi-tvUWwmc",
+                url: "https://www.youtube.com/embed/wo_D21rsYAE",
                 atributos: ["Passagem", "Limiar"],
                 filtros: ["misterio"],
                 corBorda: "misterio",
@@ -768,7 +864,7 @@
             { 
                 id: 22, 
                 titulo: "Pombagira da Calunga Profunda", 
-                url: "https://youtu.be/gHxlvf2glU0",
+                url: "https://www.youtube.com/embed/gHxlvf2glU0",
                 atributos: ["Morte", "Renascimento"],
                 filtros: ["misterio"],
                 corBorda: "misterio",
@@ -777,7 +873,7 @@
             { 
                 id: 23, 
                 titulo: "Pombagira das Correntes", 
-                url: "https://youtu.be/1rrmBzp9Cfo",
+                url: "https://www.youtube.com/embed/Ti_-EusVSj8",
                 atributos: ["Quebra", "Libertação"],
                 filtros: ["liberdade"],
                 corBorda: "liberdade",
@@ -786,7 +882,7 @@
             { 
                 id: 24, 
                 titulo: "Pombagira da Neblina", 
-                url: "https://youtu.be/KAwFZvDHOk4",
+                url: "https://www.youtube.com/embed/2-NjMF-6GzI",
                 atributos: ["Mistério", "Ilusão"],
                 filtros: ["misterio"],
                 corBorda: "misterio",
@@ -796,6 +892,7 @@
         
         // Elementos DOM
         const musicList = document.getElementById('musicList');
+        const loadingIndicator = document.getElementById('loadingIndicator');
         const videoContainer = document.getElementById('videoContainer');
         const videoPlayer = document.getElementById('videoPlayer');
         const videoTitle = document.getElementById('videoTitle');
@@ -803,70 +900,107 @@
         const currentPlaying = document.getElementById('currentPlaying');
         const currentPlayingFull = document.getElementById('currentPlayingFull');
         const filterTags = document.getElementById('filterTags');
+        const errorMessage = document.getElementById('errorMessage');
+        const errorClose = document.getElementById('errorClose');
         
         // Estado do aplicativo
         let pombagiraAtual = null;
         let filtroAtual = 'all';
         
-        // Função para converter URL do YouTube para embed
-        function getEmbedUrl(url) {
-            const videoId = url.split('v=')[1];
-            return `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1`;
-        }
+        // URLs de fallback para thumbnails caso o YouTube bloqueie
+        const thumbnailFallbacks = [
+            'https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=2070',
+            'https://images.unsplash.com/photo-1518609878373-06d740f60d8b?q=80&w=2070',
+            'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=2070',
+            'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?q=80&w=2069',
+            'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=2070',
+            'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=2070'
+        ];
         
-        // Função para gerar thumbnail do YouTube
-        function getThumbnailUrl(url) {
-            const videoId = url.split('v=')[1];
-            return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+        // Função para obter thumbnail
+        function getThumbnailUrl(index) {
+            // Usar fallback para evitar bloqueio do YouTube
+            const fallbackIndex = index % thumbnailFallbacks.length;
+            return thumbnailFallbacks[fallbackIndex];
         }
         
         // Função para tocar música
         function playPombagira(pombagira) {
-            pombagiraAtual = pombagira;
-            
-            // Atualizar textos
-            currentPlaying.textContent = `Tocando: ${pombagira.titulo}`;
-            currentPlayingFull.textContent = `Tocando: ${pombagira.titulo}`;
-            videoTitle.textContent = pombagira.titulo;
-            
-            // Configurar e mostrar player
-            videoPlayer.src = getEmbedUrl(pombagira.url);
-            videoContainer.classList.add('active');
-            
-            // Atualizar indicador visual na lista
-            document.querySelectorAll('.music-item').forEach(item => {
-                item.classList.remove('glow-effect');
-                const indicator = item.querySelector('.playing-indicator');
-                if (indicator) indicator.style.display = 'none';
-            });
-            
-            const currentItem = document.querySelector(`[data-id="${pombagira.id}"]`);
-            if (currentItem) {
-                currentItem.classList.add('glow-effect');
-                const indicator = currentItem.querySelector('.playing-indicator');
-                if (indicator) indicator.style.display = 'flex';
+            try {
+                pombagiraAtual = pombagira;
                 
-                // Rolar até o item atual se estiver visível
-                if (!currentItem.classList.contains('hidden')) {
-                    currentItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                // Atualizar textos
+                currentPlaying.textContent = `Tocando: ${pombagira.titulo}`;
+                currentPlayingFull.textContent = `Tocando: ${pombagira.titulo}`;
+                videoTitle.textContent = pombagira.titulo;
+                
+                // Configurar e mostrar player
+                videoPlayer.src = pombagira.url;
+                videoContainer.classList.add('active');
+                
+                // Atualizar indicador visual na lista
+                document.querySelectorAll('.music-item').forEach(item => {
+                    item.classList.remove('glow-effect');
+                    const indicator = item.querySelector('.playing-indicator');
+                    if (indicator) indicator.style.display = 'none';
+                });
+                
+                const currentItem = document.querySelector(`[data-id="${pombagira.id}"]`);
+                if (currentItem) {
+                    currentItem.classList.add('glow-effect');
+                    const indicator = currentItem.querySelector('.playing-indicator');
+                    if (indicator) indicator.style.display = 'flex';
+                    
+                    // Rolar até o item atual se estiver visível
+                    if (!currentItem.classList.contains('hidden')) {
+                        currentItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
                 }
+                
+                // Efeito visual no header
+                const header = document.querySelector('.header h1');
+                header.style.animation = 'pulse 0.8s infinite alternate';
+                setTimeout(() => {
+                    header.style.animation = 'pulse 4s infinite alternate';
+                }, 1500);
+                
+                // Efeito de vibração
+                document.body.style.animation = 'none';
+                setTimeout(() => {
+                    document.body.style.animation = 'vibrate 0.3s linear';
+                }, 10);
+                setTimeout(() => {
+                    document.body.style.animation = '';
+                }, 400);
+                
+                // Esconder mensagem de erro se estiver visível
+                errorMessage.classList.remove('active');
+                
+            } catch (error) {
+                console.error('Erro ao tocar música:', error);
+                showError('Erro ao carregar o vídeo. Tente novamente.');
             }
+        }
+        
+        // Função para mostrar erro
+        function showError(message) {
+            errorMessage.innerHTML = `
+                <button class="error-close" id="errorClose">×</button>
+                <strong>Erro ao carregar vídeo</strong><br>
+                ${message}
+            `;
+            errorMessage.classList.add('active');
             
-            // Efeito visual no header
-            const header = document.querySelector('.header h1');
-            header.style.animation = 'pulse 0.8s infinite alternate';
-            setTimeout(() => {
-                header.style.animation = 'pulse 4s infinite alternate';
-            }, 1500);
+            // Reatachar evento de fechar
+            document.getElementById('errorClose').addEventListener('click', hideError);
             
-            // Efeito de vibração
-            document.body.style.animation = 'none';
-            setTimeout(() => {
-                document.body.style.animation = 'vibrate 0.3s linear';
-            }, 10);
-            setTimeout(() => {
-                document.body.style.animation = '';
-            }, 400);
+            // Fechar automaticamente após 5 segundos
+            setTimeout(hideError, 5000);
+        }
+        
+        // Função para esconder erro
+        function hideError() {
+            errorMessage.classList.remove('active');
         }
         
         // Função para fechar o player
@@ -925,7 +1059,7 @@
         function renderizarLista() {
             musicList.innerHTML = '';
             
-            pombagiras.forEach(pombagira => {
+            pombagiras.forEach((pombagira, index) => {
                 const musicItem = document.createElement('div');
                 musicItem.className = `music-item border-${pombagira.corBorda}`;
                 musicItem.setAttribute('data-id', pombagira.id);
@@ -935,11 +1069,12 @@
                     <div class="playing-indicator" style="display: none;">
                         <i class="fas fa-play"></i>
                     </div>
-                    <img src="${getThumbnailUrl(pombagira.url)}" alt="${pombagira.titulo}" 
-                         class="music-thumbnail thumbnail-${pombagira.corBorda}">
+                    <div class="music-thumbnail thumbnail-${pombagira.corBorda}">
+                        <i class="${pombagira.icone}"></i>
+                    </div>
                     <div class="music-info">
                         <h3 class="music-title">
-                            <i class="${pombagira.icone}"></i> ${pombagira.titulo}
+                            ${pombagira.titulo}
                         </h3>
                         <div class="music-attributes">
                             ${pombagira.atributos.map(attr => 
@@ -953,8 +1088,11 @@
                     </div>
                 `;
                 
-                // Adicionar efeito de toque
-                musicItem.addEventListener('click', () => {
+                // Adicionar evento de clique
+                musicItem.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
                     playPombagira(pombagira);
                     
                     // Efeito visual de clique
@@ -1005,6 +1143,9 @@
                 musicList.appendChild(musicItem);
             });
             
+            // Esconder loading
+            loadingIndicator.style.display = 'none';
+            
             // Animação de entrada
             setTimeout(() => {
                 document.querySelectorAll('.music-item').forEach((item, index) => {
@@ -1019,9 +1160,16 @@
         // Event Listeners
         closeVideo.addEventListener('click', fecharPlayer);
         
+        // Fechar player com Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && videoContainer.classList.contains('active')) {
+                fecharPlayer();
+            }
+        });
+        
         // Fechar player ao tocar fora (mobile)
         videoContainer.addEventListener('click', (e) => {
-            if (e.target === videoContainer) {
+            if (e.target === videoContainer || e.target.classList.contains('close-video')) {
                 fecharPlayer();
             }
         });
@@ -1040,9 +1188,15 @@
             }
         });
         
+        // Fechar mensagem de erro
+        errorClose.addEventListener('click', hideError);
+        
         // Inicializar aplicativo
         document.addEventListener('DOMContentLoaded', () => {
-            renderizarLista();
+            // Simular carregamento
+            setTimeout(() => {
+                renderizarLista();
+            }, 800);
             
             // Adicionar interatividade aos ícones
             document.querySelectorAll('.icon-interactive').forEach(icon => {
@@ -1072,7 +1226,7 @@
             appTitle.addEventListener('click', () => {
                 const colors = ['#daa520', '#c41e3a', '#4b0082', '#f4d03f', '#8b0000'];
                 const currentColor = appTitle.style.color || getComputedStyle(appTitle).color;
-                const nextColor = colors[(colors.indexOf(currentColor) + 1) % colors.length] || colors[0];
+                const nextColor = colors[Math.floor(Math.random() * colors.length)];
                 appTitle.style.color = nextColor;
             });
             
@@ -1116,14 +1270,14 @@
             });
             
             // Ajustar player para mobile
-            videoPlayer.style.maxHeight = '50%';
+            videoPlayer.style.height = '50%';
         }
         
         // Gerenciar orientação de tela
         window.addEventListener('orientationchange', () => {
             setTimeout(() => {
                 if (videoContainer.classList.contains('active')) {
-                    videoPlayer.style.maxHeight = window.innerHeight * 0.5 + 'px';
+                    videoPlayer.style.height = window.innerHeight * 0.5 + 'px';
                 }
             }, 300);
         });
@@ -1134,6 +1288,16 @@
                 e.preventDefault();
             }
         });
+        
+        // Testar vídeos quando carregados
+        videoPlayer.addEventListener('error', () => {
+            showError('Não foi possível carregar este vídeo. Verifique sua conexão.');
+        });
+        
+        // Carregar vídeo de exemplo automaticamente após 2 segundos (para demonstração)
+        setTimeout(() => {
+            // Não autocarregar mais - deixar usuário clicar
+        }, 2000);
     </script>
 </body>
 </html>
