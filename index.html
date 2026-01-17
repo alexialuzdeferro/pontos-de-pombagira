@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pontos de Pombagiras</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Medula+One&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        :root {
+            --vermelho-intenso: #8b0000;
+            --vermelho-vibrante: #c41e3a;
+            --roxo-profundo: #4b0082;
+            --roxo-medio: #800080;
+            --dourado: #daa520;
+            --dourado-claro: #f4d03f;
+            --preto: #0a0a0a;
+            --cinza-escuro: #1a1a1a;
+            --branco: #f8f8f8;
+            --azul-profundo: #1e3a8a;
+            --verde-escuro: #14532d;
+            --marrom-terra: #8b4513;
+        }
+        
+        body {
+            font-family: 'Crimson Pro', serif;
+            background-color: var(--preto);
+            color: var(--branco);
+            line-height: 1.6;
+            overflow-x: hidden;
+            height: 100vh;
+            background-image: 
+                radial-gradient(circle at 10% 90%, rgba(139, 0, 0, 0.2) 0%, transparent 25%),
+                radial-gradient(circle at 90% 10%, rgba(75, 0, 130, 0.2) 0%, transparent 25%),
+                radial-gradient(circle at 50% 50%, rgba(218, 165, 32, 0.1) 0%, transparent 40%);
+        }
+        
+        .app-container {
+            max-width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Cabeçalho */
+        .header {
+            background: linear-gradient(135deg, var(--vermelho-intenso), var(--roxo-profundo), var(--preto));
+            padding: 15px 20px;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+            border-bottom: 3px solid var(--dourado);
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .header h1 {
+            font-family: 'Medula One', cursive;
+            font-size: 2.8rem;
+            color: var(--dourado-claro);
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9);
+            animation: pulse 4s infinite alternate;
+            margin-bottom: 5px;
+        }
+        
+        .header-subtitle {
+            font-family: 'Cinzel', serif;
+            font-size: 0.9rem;
+            opacity: 0.9;
+            color: var(--branco);
+            letter-spacing: 1px;
+            margin-top: 5px;
+        }
+        
+        /* Player de vídeo */
+        .video-container {
+            flex-grow: 1;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: none;
+            background-color: rgba(0, 0, 0, 0.95);
+            z-index: 100;
+            flex-direction: column;
+        }
+        
+        .video-container.active {
+            display: flex;
+        }
+        
+        .video-header {
+            padding: 15px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .video-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            color: var(--dourado);
+            max-width: 70%;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+        }
+        
+        .video-player-container {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+        }
+        
+        .video-player {
+            width: 100%;
+            max-height: 60%;
+            object-fit: contain;
+            border: 2px solid var(--dourado);
+            border-radius: 8px;
+            box-shadow: 0 0 30px rgba(218, 165, 32, 0.3);
+        }
+        
+        .video-controls {
+            padding: 20px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.95), transparent);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .close-video {
+            background: linear-gradient(145deg, var(--vermelho-vibrante), var(--roxo-profundo));
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .close-video:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .close-video:active {
+            transform: scale(0.85);
+        }
+        
+        .close-video:active:before {
+            left: 100%;
+        }
+        
+        /* Filtros */
+        .filters-container {
+            padding: 15px;
+            background: rgba(26, 26, 26, 0.9);
+            border-bottom: 2px solid rgba(218, 165, 32, 0.3);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+        
+        .filter-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .filter-tag {
+            padding: 8px 15px;
+            background: rgba(75, 0, 130, 0.3);
+            border: 1px solid rgba(218, 165, 32, 0.3);
+            border-radius: 20px;
+            color: var(--dourado);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-tag.active {
+            background: linear-gradient(145deg, var(--vermelho-vibrante), var(--roxo-profundo));
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+        }
+        
+        .filter-tag:active {
+            transform: scale(0.95);
+        }
+        
+        /* Lista de músicas */
+        .music-list-container {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 15px;
+            background-color: rgba(10, 10, 10, 0.95);
+        }
+        
+        .music-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 20px;
+        }
+        
+        .music-item {
+            background: linear-gradient(145deg, var(--cinza-escuro), #111);
+            border-radius: 15px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid transparent;
+            position: relative;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
+            min-height: 250px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .music-item:hover, .music-item:active {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(139, 0, 0, 0.5);
+            border-color: var(--dourado);
+        }
+        
+        .music-item:active {
+            transform: translateY(-5px) scale(0.98);
+        }
+        
+        .music-thumbnail {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            border-bottom: 3px solid;
+        }
+        
+        .music-info {
+            padding: 15px 12px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .music-title {
+            font-family: 'Cinzel', serif;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 8px;
+            color: var(--dourado);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            height: 2.8em;
+            line-height: 1.4;
+        }
+        
+        .music-attributes {
+            font-size: 0.75rem;
+            color: var(--vermelho-vibrante);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        
+        .attribute-tag {
+            background: rgba(139, 0, 0, 0.2);
+            padding: 2px 8px;
+            border-radius: 10px;
+            border: 1px solid rgba(218, 165, 32, 0.2);
+        }
+        
+        .music-number {
+            font-size: 0.8rem;
+            color: var(--dourado-claro);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: auto;
+        }
+        
+        /* Rodapé */
+        .footer {
+            background: linear-gradient(to right, var(--roxo-profundo), var(--vermelho-intenso), var(--preto));
+            padding: 15px 20px;
+            text-align: center;
+            border-top: 3px solid var(--dourado);
+            position: relative;
+            z-index: 10;
+            min-height: 90px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .current-playing {
+            font-size: 0.9rem;
+            color: var(--branco);
+            opacity: 0.9;
+            margin-bottom: 8px;
+            font-family: 'Cinzel', serif;
+        }
+        
+        .energy-text {
+            font-family: 'Medula One', cursive;
+            font-size: 1.8rem;
+            color: var(--dourado-claro);
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(218, 165, 32, 0.5);
+        }
+        
+        /* Ícones de interação */
+        .icon-interactive {
+            transition: all 0.3s ease;
+        }
+        
+        .icon-interactive:active {
+            transform: scale(1.3);
+            color: var(--vermelho-vibrante);
+        }
+        
+        /* Animações */
+        @keyframes pulse {
+            0% { 
+                text-shadow: 0 0 5px var(--dourado), 0 0 10px rgba(218, 165, 32, 0.3); 
+            }
+            100% { 
+                text-shadow: 0 0 15px var(--vermelho-vibrante), 0 0 25px var(--dourado), 0 0 35px rgba(196, 30, 58, 0.5); 
+            }
+        }
+        
+        @keyframes glow {
+            0% { box-shadow: 0 0 10px var(--vermelho-intenso), 0 0 20px rgba(139, 0, 0, 0.3); }
+            50% { box-shadow: 0 0 20px var(--vermelho-vibrante), 0 0 40px rgba(196, 30, 58, 0.5); }
+            100% { box-shadow: 0 0 10px var(--vermelho-intenso), 0 0 20px rgba(139, 0, 0, 0.3); }
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .music-list {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            }
+            
+            .music-thumbnail {
+                height: 120px;
+            }
+            
+            .energy-text {
+                font-size: 1.5rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .music-list {
+                grid-template-columns: 1fr 1fr;
+                gap: 15px;
+            }
+            
+            .music-item {
+                min-height: 230px;
+            }
+            
+            .filter-tags {
+                justify-content: flex-start;
+                overflow-x: auto;
+                padding-bottom: 5px;
+            }
+            
+            .filter-tag {
+                white-space: nowrap;
+                flex-shrink: 0;
+            }
+        }
+        
+        @media (max-width: 350px) {
+            .music-list {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Estilos para scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--cinza-escuro);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(var(--vermelho-intenso), var(--roxo-profundo));
+            border-radius: 4px;
+        }
+        
+        /* Efeitos de carregamento */
+        .music-item {
+            animation: slideIn 0.6s ease forwards;
+            opacity: 0;
+        }
+        
+        /* Indicador de item atual */
+        .playing-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(145deg, var(--vermelho-vibrante), var(--roxo-profundo));
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            animation: pulse 1.5s infinite;
+            z-index: 2;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        }
+        
+        /* Efeito de brilho nos itens ao tocar */
+        .music-item.glow-effect {
+            animation: glow 2s infinite;
+        }
+        
+        /* Efeito flutuante no título */
+        .floating {
+            animation: float 4s ease-in-out infinite;
+        }
+        
+        /* Cores específicas para cada tipo de Pombagira */
+        .border-comando { border-color: var(--dourado) !important; }
+        .border-cura { border-color: var(--verde-escuro) !important; }
+        .border-guerra { border-color: var(--vermelho-intenso) !important; }
+        .border-justica { border-color: #808080 !important; }
+        .border-misterio { border-color: var(--roxo-profundo) !important; }
+        .border-alegria { border-color: #ff6b6b !important; }
+        .border-liberdade { border-color: #f4d03f !important; }
+        .border-malandragem { border-color: #c41e3a !important; }
+        .border-emocao { border-color: var(--azul-profundo) !important; }
+        .border-sanidade { border-color: #8b008b !important; }
+        .border-renovacao { border-color: #98fb98 !important; }
+        .border-ancestralidade { border-color: var(--marrom-terra) !important; }
+        
+        .thumbnail-comando { border-bottom-color: var(--dourado) !important; }
+        .thumbnail-cura { border-bottom-color: var(--verde-escuro) !important; }
+        .thumbnail-guerra { border-bottom-color: var(--vermelho-intenso) !important; }
+        .thumbnail-justica { border-bottom-color: #808080 !important; }
+        .thumbnail-misterio { border-bottom-color: var(--roxo-profundo) !important; }
+        .thumbnail-alegria { border-bottom-color: #ff6b6b !important; }
+        .thumbnail-liberdade { border-bottom-color: #f4d03f !important; }
+        .thumbnail-malandragem { border-bottom-color: #c41e3a !important; }
+        .thumbnail-emocao { border-bottom-color: var(--azul-profundo) !important; }
+        .thumbnail-sanidade { border-bottom-color: #8b008b !important; }
+        .thumbnail-renovacao { border-bottom-color: #98fb98 !important; }
+        .thumbnail-ancestralidade { border-bottom-color: var(--marrom-terra) !important; }
+        
+        /* Estilo para elemento oculto */
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Cabeçalho -->
+        <header class="header">
+            <h1 class="floating"><i class="fas fa-crown icon-interactive"></i> PONTOS DE POMBAGIRAS <i class="fas fa-moon icon-interactive"></i></h1>
+            <div class="header-subtitle">Força, poder e ancestralidade feminina</div>
+        </header>
+        
+        <!-- Filtros -->
+        <div class="filters-container">
+            <div class="filter-tags" id="filterTags">
+                <div class="filter-tag active" data-filter="all">Todas</div>
+                <div class="filter-tag" data-filter="comando">Comando</div>
+                <div class="filter-tag" data-filter="cura">Cura</div>
+                <div class="filter-tag" data-filter="guerra">Guerra</div>
+                <div class="filter-tag" data-filter="justica">Justiça</div>
+                <div class="filter-tag" data-filter="misterio">Mistério</div>
+                <div class="filter-tag" data-filter="alegria">Alegria</div>
+                <div class="filter-tag" data-filter="liberdade">Liberdade</div>
+            </div>
+        </div>
+        
+        <!-- Player de vídeo -->
+        <div class="video-container" id="videoContainer">
+            <div class="video-header">
+                <div class="video-title" id="videoTitle">Ponto de Pombagira</div>
+                <button class="close-video" id="closeVideo">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="video-player-container">
+                <iframe class="video-player" id="videoPlayer" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+            
+            <div class="video-controls">
+                <div class="current-playing" id="currentPlayingFull">Tocando agora</div>
+            </div>
+        </div>
+        
+        <!-- Lista de músicas -->
+        <main class="music-list-container">
+            <div class="music-list" id="musicList">
+                <!-- As músicas serão carregadas aqui via JavaScript -->
+            </div>
+        </main>
+        
+        <!-- Rodapé -->
+        <footer class="footer">
+            <div class="current-playing" id="currentPlaying">
+                Selecione um ponto para tocar
+            </div>
+            <div class="energy-text">
+                SARAVÁ POMBAGIRA! <i class="fas fa-fire icon-interactive"></i>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Dados completos das Pombagiras
+        const pombagiras = [
+            { 
+                id: 1, 
+                titulo: "Pombagira Maria Padilha", 
+                url: "https://youtu.be/coi-tvUWwmc",
+                atributos: ["Comando", "Realeza"],
+                filtros: ["comando"],
+                corBorda: "comando",
+                icone: "fas fa-crown"
+            },
+            { 
+                id: 2, 
+                titulo: "Pombagira Maria Mulambo", 
+                url: "https://youtu.be/gHxlvf2glU0",
+                atributos: ["Cura", "Humildade"],
+                filtros: ["cura"],
+                corBorda: "cura",
+                icone: "fas fa-heart"
+            },
+            { 
+                id: 3, 
+                titulo: "Pombagira Maria Quitéria", 
+                url: "https://youtu.be/1rrmBzp9Cfo",
+                atributos: ["Guerra", "Proteção"],
+                filtros: ["guerra"],
+                corBorda: "guerra",
+                icone: "fas fa-shield-alt"
+            },
+            { 
+                id: 4, 
+                titulo: "Pombagira Rosa Caveira", 
+                url: "https://youtu.be/KAwFZvDHOk4",
+                atributos: ["Justiça", "Morte"],
+                filtros: ["justica"],
+                corBorda: "justica",
+                icone: "fas fa-balance-scale"
+            },
+            { 
+                id: 5, 
+                titulo: "Pombagira Dama da Noite", 
+                url: "https://youtu.be/doPc-mLAH1g",
+                atributos: ["Mistério", "Oculto"],
+                filtros: ["misterio"],
+                corBorda: "misterio",
+                icone: "fas fa-moon"
+            },
+            { 
+                id: 6, 
+                titulo: "Pombagira Sete Saias", 
+                url: "https://youtu.be/Tp1MB84YL2s",
+                atributos: ["Alegria", "Intensidade"],
+                filtros: ["alegria"],
+                corBorda: "alegria",
+                icone: "fas fa-laugh"
+            },
+            { 
+                id: 7, 
+                titulo: "Pombagira Cigana", 
+                url: "https://youtu.be/dCNo7XIyMQ0",
+                atributos: ["Liberdade", "Prosperidade"],
+                filtros: ["liberdade"],
+                corBorda: "liberdade",
+                icone: "fas fa-dove"
+            },
+            { 
+                id: 8, 
+                titulo: "Pombagira Maria Navalha", 
+                url: "https://youtu.be/hH1pNWlM2zE",
+                atributos: ["Malandragem", "Rua"],
+                filtros: ["guerra"],
+                corBorda: "malandragem",
+                icone: "fas fa-cut"
+            },
+            { 
+                id: 9, 
+                titulo: "Pombagira da Praia", 
+                url: "https://youtu.be/wo_D21rsYAE",
+                atributos: ["Emoção", "Limpeza (Água)"],
+                filtros: ["cura"],
+                corBorda: "emocao",
+                icone: "fas fa-water"
+            },
+            { 
+                id: 10, 
+                titulo: "Pombagira Maria Farrapo", 
+                url: "https://youtu.be/Q182YSAcgNk",
+                atributos: ["Sanidade", "Caos (Mental)"],
+                filtros: ["misterio"],
+                corBorda: "sanidade",
+                icone: "fas fa-brain"
+            },
+            { 
+                id: 11, 
+                titulo: "Pombagira Menina", 
+                url: "https://youtu.be/P4mC3avgs3Y",
+                atributos: ["Renovação", "Inocência"],
+                filtros: ["cura"],
+                corBorda: "renovacao",
+                icone: "fas fa-child"
+            },
+            { 
+                id: 12, 
+                titulo: "Pombagira da Figueira", 
+                url: "https://youtu.be/GcRdBJzBMa8",
+                atributos: ["Raiz", "Ancestralidade (Terra)"],
+                filtros: ["cura"],
+                corBorda: "ancestralidade",
+                icone: "fas fa-tree"
+            },
+            { 
+                id: 13, 
+                titulo: "Pombagira das Almas", 
+                url: "https://youtu.be/3krnGT0s0bQ",
+                atributos: ["Espiritualidade", "Passagem"],
+                filtros: ["misterio"],
+                corBorda: "misterio",
+                icone: "fas fa-ghost"
+            },
+            { 
+                id: 14, 
+                titulo: "Pombagira Sete Encruzilhadas", 
+                url: "https://youtu.be/JYCfOQtEz50",
+                atributos: ["Caminhos", "Decisões"],
+                filtros: ["misterio"],
+                corBorda: "misterio",
+                icone: "fas fa-crossroads"
+            },
+            { 
+                id: 15, 
+                titulo: "Pombagira da Lua", 
+                url: "https://youtu.be/qN935nP6tEw",
+                atributos: ["Feminino", "Ciclos"],
+                filtros: ["misterio"],
+                corBorda: "misterio",
+                icone: "fas fa-moon"
+            },
+            { 
+                id: 16, 
+                titulo: "Pombagira das Trevas", 
+                url: "https://youtu.be/CoVIhTrUe3w",
+                atributos: ["Sombra", "Conhecimento"],
+                filtros: ["misterio"],
+                corBorda: "misterio",
+                icone: "fas fa-eye"
+            },
+            { 
+                id: 17, 
+                titulo: "Pombagira da Serra", 
+                url: "https://youtu.be/t3YhMcwURzY",
+                atributos: ["Força", "Resistência"],
+                filtros: ["guerra"],
+                corBorda: "guerra",
+                icone: "fas fa-mountain"
+            },
+            { 
+                id: 18, 
+                titulo: "Pombagira do Fogo", 
+                url: "https://youtu.be/2-NjMF-6GzI",
+                atributos: ["Paixão", "Transformação"],
+                filtros: ["guerra"],
+                corBorda: "guerra",
+                icone: "fas fa-fire"
+            },
+            { 
+                id: 19, 
+                titulo: "Pombagira das Águas Profundas", 
+                url: "https://youtu.be/Ti_-EusVSj8",
+                atributos: ["Emoção", "Profundidade"],
+                filtros: ["cura"],
+                corBorda: "emocao",
+                icone: "fas fa-tint"
+            },
+            { 
+                id: 20, 
+                titulo: "Pombagira da Sombra", 
+                url: "https://youtu.be/YxQ24LupgKg",
+                atributos: ["Proteção", "Invisibilidade"],
+                filtros: ["misterio"],
+                corBorda: "misterio",
+                icone: "fas fa-user-secret"
+            },
+            { 
+                id: 21, 
+                titulo: "Pombagira da Fenda", 
+                url: "https://youtu.be/coi-tvUWwmc",
+                atributos: ["Passagem", "Limiar"],
+                filtros: ["misterio"],
+                corBorda: "misterio",
+                icone: "fas fa-door-open"
+            },
+            { 
+                id: 22, 
+                titulo: "Pombagira da Calunga Profunda", 
+                url: "https://youtu.be/gHxlvf2glU0",
+                atributos: ["Morte", "Renascimento"],
+                filtros: ["misterio"],
+                corBorda: "misterio",
+                icone: "fas fa-skull-crossbones"
+            },
+            { 
+                id: 23, 
+                titulo: "Pombagira das Correntes", 
+                url: "https://youtu.be/1rrmBzp9Cfo",
+                atributos: ["Quebra", "Libertação"],
+                filtros: ["liberdade"],
+                corBorda: "liberdade",
+                icone: "fas fa-unlock"
+            },
+            { 
+                id: 24, 
+                titulo: "Pombagira da Neblina", 
+                url: "https://youtu.be/KAwFZvDHOk4",
+                atributos: ["Mistério", "Ilusão"],
+                filtros: ["misterio"],
+                corBorda: "misterio",
+                icone: "fas fa-cloud"
+            }
+        ];
+        
+        // Elementos DOM
+        const musicList = document.getElementById('musicList');
+        const videoContainer = document.getElementById('videoContainer');
+        const videoPlayer = document.getElementById('videoPlayer');
+        const videoTitle = document.getElementById('videoTitle');
+        const closeVideo = document.getElementById('closeVideo');
+        const currentPlaying = document.getElementById('currentPlaying');
+        const currentPlayingFull = document.getElementById('currentPlayingFull');
+        const filterTags = document.getElementById('filterTags');
+        
+        // Estado do aplicativo
+        let pombagiraAtual = null;
+        let filtroAtual = 'all';
+        
+        // Função para converter URL do YouTube para embed
+        function getEmbedUrl(url) {
+            const videoId = url.split('v=')[1];
+            return `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1`;
+        }
+        
+        // Função para gerar thumbnail do YouTube
+        function getThumbnailUrl(url) {
+            const videoId = url.split('v=')[1];
+            return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+        }
+        
+        // Função para tocar música
+        function playPombagira(pombagira) {
+            pombagiraAtual = pombagira;
+            
+            // Atualizar textos
+            currentPlaying.textContent = `Tocando: ${pombagira.titulo}`;
+            currentPlayingFull.textContent = `Tocando: ${pombagira.titulo}`;
+            videoTitle.textContent = pombagira.titulo;
+            
+            // Configurar e mostrar player
+            videoPlayer.src = getEmbedUrl(pombagira.url);
+            videoContainer.classList.add('active');
+            
+            // Atualizar indicador visual na lista
+            document.querySelectorAll('.music-item').forEach(item => {
+                item.classList.remove('glow-effect');
+                const indicator = item.querySelector('.playing-indicator');
+                if (indicator) indicator.style.display = 'none';
+            });
+            
+            const currentItem = document.querySelector(`[data-id="${pombagira.id}"]`);
+            if (currentItem) {
+                currentItem.classList.add('glow-effect');
+                const indicator = currentItem.querySelector('.playing-indicator');
+                if (indicator) indicator.style.display = 'flex';
+                
+                // Rolar até o item atual se estiver visível
+                if (!currentItem.classList.contains('hidden')) {
+                    currentItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+            
+            // Efeito visual no header
+            const header = document.querySelector('.header h1');
+            header.style.animation = 'pulse 0.8s infinite alternate';
+            setTimeout(() => {
+                header.style.animation = 'pulse 4s infinite alternate';
+            }, 1500);
+            
+            // Efeito de vibração
+            document.body.style.animation = 'none';
+            setTimeout(() => {
+                document.body.style.animation = 'vibrate 0.3s linear';
+            }, 10);
+            setTimeout(() => {
+                document.body.style.animation = '';
+            }, 400);
+        }
+        
+        // Função para fechar o player
+        function fecharPlayer() {
+            videoContainer.classList.remove('active');
+            videoPlayer.src = '';
+            
+            // Parar a animação de brilho no item atual
+            document.querySelectorAll('.music-item').forEach(item => {
+                item.classList.remove('glow-effect');
+            });
+        }
+        
+        // Função para filtrar a lista
+        function filtrarLista(filtro) {
+            filtroAtual = filtro;
+            
+            // Atualizar botões de filtro
+            document.querySelectorAll('.filter-tag').forEach(tag => {
+                if (tag.dataset.filter === filtro) {
+                    tag.classList.add('active');
+                } else {
+                    tag.classList.remove('active');
+                }
+            });
+            
+            // Mostrar/ocultar itens
+            document.querySelectorAll('.music-item').forEach(item => {
+                const id = parseInt(item.dataset.id);
+                const pombagira = pombagiras.find(p => p.id === id);
+                
+                if (filtro === 'all' || pombagira.filtros.includes(filtro)) {
+                    item.classList.remove('hidden');
+                    setTimeout(() => {
+                        item.style.opacity = '1';
+                        item.style.transform = 'translateY(0)';
+                    }, 10);
+                } else {
+                    item.classList.add('hidden');
+                    item.style.opacity = '0';
+                    item.style.transform = 'translateY(20px)';
+                }
+            });
+            
+            // Efeito visual nos filtros
+            const activeFilter = document.querySelector(`.filter-tag[data-filter="${filtro}"]`);
+            if (activeFilter) {
+                activeFilter.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    activeFilter.style.transform = '';
+                }, 150);
+            }
+        }
+        
+        // Função para renderizar a lista
+        function renderizarLista() {
+            musicList.innerHTML = '';
+            
+            pombagiras.forEach(pombagira => {
+                const musicItem = document.createElement('div');
+                musicItem.className = `music-item border-${pombagira.corBorda}`;
+                musicItem.setAttribute('data-id', pombagira.id);
+                musicItem.setAttribute('data-filtros', pombagira.filtros.join(','));
+                
+                musicItem.innerHTML = `
+                    <div class="playing-indicator" style="display: none;">
+                        <i class="fas fa-play"></i>
+                    </div>
+                    <img src="${getThumbnailUrl(pombagira.url)}" alt="${pombagira.titulo}" 
+                         class="music-thumbnail thumbnail-${pombagira.corBorda}">
+                    <div class="music-info">
+                        <h3 class="music-title">
+                            <i class="${pombagira.icone}"></i> ${pombagira.titulo}
+                        </h3>
+                        <div class="music-attributes">
+                            ${pombagira.atributos.map(attr => 
+                                `<span class="attribute-tag">${attr}</span>`
+                            ).join('')}
+                        </div>
+                        <div class="music-number">
+                            <i class="fas fa-star icon-interactive"></i>
+                            Ponto ${pombagira.id}
+                        </div>
+                    </div>
+                `;
+                
+                // Adicionar efeito de toque
+                musicItem.addEventListener('click', () => {
+                    playPombagira(pombagira);
+                    
+                    // Efeito visual de clique
+                    musicItem.style.transform = 'translateY(-5px) scale(0.98)';
+                    setTimeout(() => {
+                        musicItem.style.transform = 'translateY(-10px) scale(1.02)';
+                    }, 150);
+                });
+                
+                // Efeitos de interação
+                musicItem.addEventListener('mousedown', () => {
+                    musicItem.style.transform = 'translateY(-5px) scale(0.98)';
+                });
+                
+                musicItem.addEventListener('mouseup', () => {
+                    if (pombagiraAtual?.id !== pombagira.id) {
+                        musicItem.style.transform = 'translateY(0) scale(1)';
+                    } else {
+                        musicItem.style.transform = 'translateY(-10px) scale(1.02)';
+                    }
+                });
+                
+                musicItem.addEventListener('mouseenter', () => {
+                    if (window.innerWidth > 768 && pombagiraAtual?.id !== pombagira.id) {
+                        musicItem.style.transform = 'translateY(-8px) scale(1.02)';
+                    }
+                });
+                
+                musicItem.addEventListener('mouseleave', () => {
+                    if (window.innerWidth > 768 && pombagiraAtual?.id !== pombagira.id) {
+                        musicItem.style.transform = 'translateY(0) scale(1)';
+                    }
+                });
+                
+                // Efeitos touch para mobile
+                musicItem.addEventListener('touchstart', () => {
+                    musicItem.style.transform = 'translateY(-5px) scale(0.98)';
+                }, { passive: true });
+                
+                musicItem.addEventListener('touchend', () => {
+                    if (pombagiraAtual?.id !== pombagira.id) {
+                        setTimeout(() => {
+                            musicItem.style.transform = 'translateY(0) scale(1)';
+                        }, 300);
+                    }
+                }, { passive: true });
+                
+                musicList.appendChild(musicItem);
+            });
+            
+            // Animação de entrada
+            setTimeout(() => {
+                document.querySelectorAll('.music-item').forEach((item, index) => {
+                    setTimeout(() => {
+                        item.style.opacity = '1';
+                        item.style.transform = 'translateY(0)';
+                    }, 100 + (index * 30));
+                });
+            }, 300);
+        }
+        
+        // Event Listeners
+        closeVideo.addEventListener('click', fecharPlayer);
+        
+        // Fechar player ao tocar fora (mobile)
+        videoContainer.addEventListener('click', (e) => {
+            if (e.target === videoContainer) {
+                fecharPlayer();
+            }
+        });
+        
+        // Configurar filtros
+        filterTags.addEventListener('click', (e) => {
+            if (e.target.classList.contains('filter-tag')) {
+                const filtro = e.target.dataset.filter;
+                filtrarLista(filtro);
+                
+                // Efeito de clique
+                e.target.style.transform = 'scale(0.9)';
+                setTimeout(() => {
+                    e.target.style.transform = '';
+                }, 150);
+            }
+        });
+        
+        // Inicializar aplicativo
+        document.addEventListener('DOMContentLoaded', () => {
+            renderizarLista();
+            
+            // Adicionar interatividade aos ícones
+            document.querySelectorAll('.icon-interactive').forEach(icon => {
+                icon.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    
+                    // Efeito de salto
+                    this.style.transform = 'scale(1.4) translateY(-5px)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1) translateY(0)';
+                    }, 200);
+                });
+                
+                icon.addEventListener('touchstart', function() {
+                    this.style.transform = 'scale(1.4) translateY(-5px)';
+                }, { passive: true });
+                
+                icon.addEventListener('touchend', function() {
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1) translateY(0)';
+                    }, 200);
+                }, { passive: true });
+            });
+            
+            // Efeito no título do aplicativo
+            const appTitle = document.querySelector('.header h1');
+            appTitle.addEventListener('click', () => {
+                const colors = ['#daa520', '#c41e3a', '#4b0082', '#f4d03f', '#8b0000'];
+                const currentColor = appTitle.style.color || getComputedStyle(appTitle).color;
+                const nextColor = colors[(colors.indexOf(currentColor) + 1) % colors.length] || colors[0];
+                appTitle.style.color = nextColor;
+            });
+            
+            // Toque inicial no título
+            setTimeout(() => {
+                appTitle.style.transform = 'scale(1.1)';
+                appTitle.style.textShadow = '0 0 20px rgba(218, 165, 32, 0.8)';
+                setTimeout(() => {
+                    appTitle.style.transform = 'scale(1)';
+                    appTitle.style.textShadow = '';
+                }, 500);
+            }, 800);
+            
+            // Adicionar animação de vibração
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes vibrate {
+                    0% { transform: translate(0); }
+                    20% { transform: translate(-2px, 2px); }
+                    40% { transform: translate(-2px, -2px); }
+                    60% { transform: translate(2px, 2px); }
+                    80% { transform: translate(2px, -2px); }
+                    100% { transform: translate(0); }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+        
+        // Detectar se é mobile
+        function isMobile() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        }
+        
+        // Otimizar para mobile
+        if (isMobile()) {
+            document.body.style.touchAction = 'manipulation';
+            
+            // Prevenir zoom em elementos interativos
+            document.querySelectorAll('button, .music-item, .filter-tag').forEach(el => {
+                el.style.touchAction = 'manipulation';
+            });
+            
+            // Ajustar player para mobile
+            videoPlayer.style.maxHeight = '50%';
+        }
+        
+        // Gerenciar orientação de tela
+        window.addEventListener('orientationchange', () => {
+            setTimeout(() => {
+                if (videoContainer.classList.contains('active')) {
+                    videoPlayer.style.maxHeight = window.innerHeight * 0.5 + 'px';
+                }
+            }, 300);
+        });
+        
+        // Prevenir ações padrão em toques longos
+        document.addEventListener('contextmenu', (e) => {
+            if (isMobile()) {
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>
